@@ -136,24 +136,40 @@ Memory is divided into 2 areas, known as **kernel space and user space** (synony
 These two modes are enforced by the CPU hardware. If code executing in **User mode** attempts to do something outside, example accessing a privileged CPU instruction or modifying memory that it has no access to, then a trappable exception is thrown. Instead of your entire system crashing, only that particular application crashes.
 
 ## What is X Window?
-![streams](/img/linux/simple-X-window-system-architecture.png)
-![streams](/img/linux/x_client_os.gif)
 
-有鑑於圖形使用者介面(Graphical User Interface, GUI) 的需求日益加重，在1984年由MIT與其他協力廠商首次發表了X Window System！
+The X Window System, often referred to as ‘X11’ or simply ‘X’, is a foundational technology for graphical user interfaces on Unix-like operating systems, including Linux. It serves as a base for graphical environments and desktops, providing the core functionality that allows users to interact with the operating system and applications using windows, menus, buttons, and other graphical elements.
 
-The X Window System (X11, or simply X) is a windowing system for bitmap displays, common on Unix-like operating systems.
-
-X provides the basic framework for a GUI environment: drawing and moving windows on the display device and interacting with a mouse and keyboard. X does not mandate the user interface – this is handled by individual programs. As such, the visual styling of X-based environments varies greatly; different programs may present radically different interfaces.
-
-> X Window是Linux下的窗口系統，GNOME和KDE是基於X Window的經過不同組織進行整合之後的桌面環境，通過X Window他們才能運行。 X Window（請注意不是X Windows）並不是一個直接的圖形操作環境，而是作為圖形環境與UNIX系統內核溝通的中間橋樑，任何廠商都可以在X Window基礎上開發出不同的GUI圖形環境。
 
 ![Modern X window](/img/linux/KDE_Plasma_5.16.png)A modern example of a graphical user interface using X11 and KDE Plasma 5.16
 
-X Window從邏輯上分為三層：
-- 最底層的X Server（X服務器）主要處理輸入/輸出信息並維護相關資源，它接受來自鍵盤、鼠標的操作並將它交給X Client（X客戶端）作出反饋，而由X Client傳來的輸出信息也由它來負責輸出；
-- 最外層的X Client則提供一個完整的GUI界面，負責與用戶的直接交互（KDE、Gnome都是一個X Client），而銜接X Server與X Client的就是“X Protocol(X通訊協議)”、它的任務是充當這兩者的溝通管道。儘管UNIX廠商採用相同的X Window，但由於終端的X Client並不相同，這就導致不同UNIX產品搭配的GUI界面看起來非常不一樣。
-
 > 為什麼稱圖形使用者介面為X呢？因為由英文單字來看，Window的W接的就是X啦！意指Window的下一版就是了！ 需注意的是，X Window並不是X Windows喔！
+
+### How X Window System Works
+
+![streams](/img/linux/simple-X-window-system-architecture.png)
+
+The X Window System works on a client-server model.
+
+- **Server**: Primarily responsible for drawing and displaying screen images.
+  - The main function of X Server (whether it's Xorg or XFree86, they are both X servers) is to manage display hardware on the host regarding aspects like graphics card, screen resolution, keyboard type, mouse type, etc.
+  X Server also has an important task, which is to inform X Client about actions from input devices (such as keyboard, mouse, etc.). Since X Server manages these peripheral hardware, it informs X Client about the actions of these peripherals. However, X Server itself doesn't know what display effects these peripheral device actions will have, so it informs X Client about these actions, allowing X Client to handle them.
+- **Clients**: Primarily responsible for handling "events."
+  - Clients are the GUI applications that users interact with. They could be running on the same machine as the server or on a different machine over the network.
+  - One of the biggest advantages of this system is that X Client doesn't need to know about the hardware setup or operating system of X Server. X Client merely handles drawing data, so it doesn't matter what hardware or OS the X Server on the client side uses.
+- **Display**: This is the combination of the monitor, mouse, keyboard, and related input/output hardware.
+- **Window Manager**: An additional program that determines the appearance of windows and how they behave.
+
+### Simplified Interaction Process
+
+![streams](/img/linux/x_client_os.gif)
+
+1. A client application wants to create a window.
+2. It sends a request to the X server.
+3. The X server creates the window and manages inputs and outputs for that window.
+4. The window manager controls how the window looks and the way the user can interact with it (resizing, moving, closing).
+5. The client application draws its interface in the window by sending draw commands to the server. The server interprets these commands and renders the output on the screen.
+6. User inputs like keyboard strokes or mouse movements are sent via the server to the client application.
+
 
 ## What is tty?
 In essence, tty is short for teletype, but it's more popularly known as terminal. It's basically a device (implemented in software nowadays) that allows you to interact with the system by passing on the data (you input) to the system, and displaying the output produced by the system.
